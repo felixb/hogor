@@ -34,9 +34,9 @@ func TestInitialState_Enter_on_off(t *testing.T) {
 
 // Transits to waiting state
 func TestInitialState_Enter_on_on(t *testing.T) {
-	s := NewInititalState(gpioSwitchOn, gpioGateOn)
-	m := NewMachine(s)
-	m.Start()
+	s0 := NewInititalState(gpioSwitchOn, gpioGateOn)
+	s1 := s0.Enter()
 
-	assert.Equal(t, "Waiting", m.state.String())
+	assert.NotNil(t, s1)
+	assert.Equal(t, "Waiting", s1.String())
 }

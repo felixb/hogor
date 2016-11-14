@@ -13,7 +13,12 @@ func (s *OnState) Enter() State {
 func (s *OnState) Leave() {}
 
 func (s *OnState) Event(pin uint, value uint) State {
-	return nil
+	if pin == gpioSwitch && value == gpioSwitchOff {
+		return NewOffState()
+	} else {
+		// TODO gate opens..
+		return nil
+	}
 }
 
 func (s *OnState) String() string {
