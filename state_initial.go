@@ -27,8 +27,6 @@ func (s *InititalState) Enter() State {
 	}
 }
 
-func (s *InititalState) Leave() {}
-
 func (s *InititalState) Event(pin uint, value uint) State {
 	return nil
 }

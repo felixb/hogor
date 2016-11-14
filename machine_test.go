@@ -56,7 +56,6 @@ func TestMachine_Start_state(t *testing.T) {
 	m := NewMachine(s0)
 
 	s0.On("Enter").Return(s1)
-	s0.On("Leave").Return()
 	s1.On("Enter").Return(nil)
 
 	m.Start()
@@ -96,7 +95,6 @@ func TestMachine_Event_state(t *testing.T) {
 	m := NewMachine(s0)
 
 	s0.On("Event", pin, value).Return(s1)
-	s0.On("Leave").Return()
 	s1.On("Enter").Return(nil)
 
 	m.Event(pin, value)
@@ -106,12 +104,10 @@ func TestMachine_Event_state(t *testing.T) {
 	assert.Equal(t, s1, m.state)
 }
 
-// Machine.Transit calls Leave on old state, Enter on new state
+// Machine.Transit calls Enter on new state
 func TestMachine_Transit(t *testing.T) {
 	s0 := new(MockState)
 	m := NewMachine(s0)
-
-	s0.On("Leave").Return()
 
 	s1 := new(MockState)
 	s1.On("Enter").Return(nil)
@@ -119,4 +115,6 @@ func TestMachine_Transit(t *testing.T) {
 	m.Transit(s1)
 
 	s0.AssertExpectations(t)
+	s1.AssertExpectations(t)
+	assert.Equal(t, s1, m.state)
 }

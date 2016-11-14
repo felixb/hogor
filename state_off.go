@@ -12,8 +12,6 @@ func (s *OffState) Enter() State {
 	return nil
 }
 
-func (s *OffState) Leave() {}
-
 func (s *OffState) Event(pin uint, value uint) State {
 	if pin == gpioSwitch && value == gpioSwitchOn {
 		return NewWaitingState()
