@@ -13,7 +13,7 @@ build-docker: hogor-x86_64 hogor-arm
 	touch .get-deps
 
 test: *.go .get-deps
-	go test -cover ./...
+	go test -v -cover ./...
 
 clean:
 	rm -f .get-deps
