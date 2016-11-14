@@ -7,6 +7,7 @@ func NewOnState() State {
 	return &s
 }
 func (s *OnState) Enter() State {
+	// TODO status led -> on
 	return nil
 }
 

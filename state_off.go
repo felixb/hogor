@@ -8,6 +8,7 @@ func NewOffState() State {
 }
 
 func (s *OffState) Enter() State {
+	// TODO status led -> off
 	return nil
 }
 
