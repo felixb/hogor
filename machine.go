@@ -43,16 +43,29 @@ func (m *Machine) Transit(newState State) {
 	m.state = newState
 	m.state.Enter()
 
-	if t, ok := m.state.(Ticker); ok {
-		if m.ticker != nil {
-			m.ticker.Stop()
-		}
-		m.ticker = time.NewTicker(tick)
-		start := time.Now()
-		go func() {
-			for range m.ticker.C {
-				t.Tick(time.Since(start))
-			}
-		}()
+	if m.ticker != nil {
+		m.stopTicker()
 	}
+	if t, ok := m.state.(Ticker); ok {
+		m.startTicker(t)
+	}
+}
+
+func (m *Machine) startTicker(t Ticker) {
+	log.Printf("Starting ticker")
+	m.ticker = time.NewTicker(tick)
+	start := time.Now()
+	go func() {
+		for range m.ticker.C {
+			if s := t.Tick(time.Since(start)); s != nil {
+				m.Transit(s)
+			}
+		}
+	}()
+}
+
+func (m *Machine) stopTicker() {
+	log.Printf("Stopping ticker")
+	m.ticker.Stop()
+	m.ticker = nil
 }

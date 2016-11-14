@@ -3,14 +3,13 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 // Enter does nothing
 func TestWaitingState_Enter(t *testing.T) {
 	s0 := NewWaitingState()
 	s1 := s0.Enter()
-
-	// TODO mock timer
 
 	assert.Nil(t, s1)
 }
@@ -30,4 +29,13 @@ func TestWaitingState_Event_switch_On(t *testing.T) {
 	s1 := s0.Event(gpioSwitch, gpioSwitchOn)
 
 	assert.Nil(t, s1)
+}
+
+func TestWaitingState_Tick(t *testing.T) {
+	s := NewWaitingState()
+
+	assert.Nil(t, s.Tick(time.Second))
+	assert.Nil(t, s.Tick(2 * time.Second))
+	assert.NotNil(t, s.Tick(65 * time.Second))
+	assert.Equal(t, "On", s.Tick(65 * time.Second).String())
 }

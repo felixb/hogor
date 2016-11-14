@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 // Enter does nothing
@@ -28,4 +29,13 @@ func TestOpenState_Event_switch_On(t *testing.T) {
 	s1 := s0.Event(gpioSwitch, gpioSwitchOn)
 
 	assert.Nil(t, s1)
+}
+
+func TestOpenState_Tick(t *testing.T) {
+	s := NewWaitingState()
+
+	assert.Nil(t, s.Tick(time.Second))
+	assert.Nil(t, s.Tick(2 * time.Second))
+	assert.NotNil(t, s.Tick(10 * time.Second))
+	assert.Equal(t, "On", s.Tick(10 * time.Second).String())
 }

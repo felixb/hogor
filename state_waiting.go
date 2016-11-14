@@ -1,15 +1,21 @@
 package main
 
+import (
+	"time"
+)
+
+const (
+	max_wait = time.Second * 5
+)
+
 type WaitingState struct{}
 
-func NewWaitingState() State {
+func NewWaitingState() *WaitingState {
 	s := WaitingState{}
 	return &s
 }
 
 func (s *WaitingState) Enter() State {
-	// TODO schedule timer to transit to on state
-	// TODO blink status led
 	return nil
 }
 
@@ -23,4 +29,13 @@ func (s *WaitingState) Event(pin uint, value uint) State {
 
 func (s *WaitingState) String() string {
 	return "Waiting"
+}
+
+func (s *WaitingState) Tick(d time.Duration) State {
+	// TODO blink status led
+	if d < max_wait {
+		return nil
+	} else {
+		return NewOnState()
+	}
 }
