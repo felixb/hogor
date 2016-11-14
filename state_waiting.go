@@ -7,12 +7,16 @@ func NewWaitingState() State {
 	return &s
 }
 
-func (s *WaitingState) Enter(m *Machine) {}
+func (s *WaitingState) Enter() State {
+	return nil
+}
 
-func (s *WaitingState) Leave(m *Machine) {}
+func (s *WaitingState) Leave() {}
 
-func (s *WaitingState) Event(m *Machine, pin uint, value uint) {}
+func (s *WaitingState) Event(pin uint, value uint) State {
+	return nil
+}
 
 func (s *WaitingState) String() string {
-	return "WaitingState"
+	return "Waiting"
 }

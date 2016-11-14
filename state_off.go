@@ -7,12 +7,16 @@ func NewOffState() State {
 	return &s
 }
 
-func (s *OffState) Enter(m *Machine) {}
+func (s *OffState) Enter() State {
+	return nil
+}
 
-func (s *OffState) Leave(m *Machine) {}
+func (s *OffState) Leave() {}
 
-func (s *OffState) Event(m *Machine, pin uint, value uint) {}
+func (s *OffState) Event(pin uint, value uint) State {
+	return nil
+}
 
 func (s *OffState) String() string {
-	return "OffState"
+	return "Off"
 }

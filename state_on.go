@@ -6,13 +6,16 @@ func NewOnState() State {
 	s := OnState{}
 	return &s
 }
+func (s *OnState) Enter() State {
+	return nil
+}
 
-func (s *OnState) Enter(m *Machine) {}
+func (s *OnState) Leave() {}
 
-func (s *OnState) Leave(m *Machine) {}
-
-func (s *OnState) Event(m *Machine, pin uint, value uint) {}
+func (s *OnState) Event(pin uint, value uint) State {
+	return nil
+}
 
 func (s *OnState) String() string {
-	return "OnState"
+	return "On"
 }

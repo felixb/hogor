@@ -16,21 +16,23 @@ func NewInititalState(switchValue, gateValue uint) State {
 	return &s
 }
 
-func (s *InititalState) Enter(m *Machine) {
+func (s *InititalState) Enter() State {
 	log.Printf("Initial switch value: %d", s.switchValue)
 	log.Printf("Initial gate value: %d", s.gateValue)
 
 	if s.switchValue == gpioSwitchOff {
-		m.Transit(NewOffState())
+		return NewOffState()
 	} else {
-		m.Transit(NewWaitingState())
+		return NewWaitingState()
 	}
 }
 
-func (s *InititalState) Leave(m *Machine) {}
+func (s *InititalState) Leave() {}
 
-func (s *InititalState) Event(m *Machine, pin uint, value uint) {}
+func (s *InititalState) Event(pin uint, value uint) State {
+	return nil
+}
 
 func (s *InititalState) String() string {
-	return "InititalState"
+	return "Initital"
 }

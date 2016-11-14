@@ -1,8 +1,8 @@
 package main
 
 type State interface {
-	Enter(m *Machine)
-	Leave(m *Machine)
-	Event(m *Machine, pin uint, value uint)
+	Enter() State
+	Leave()
+	Event(pin uint, value uint) State
 	String() string
 }
