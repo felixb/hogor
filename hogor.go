@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/brian-armstrong/gpio"
 	"log"
+	"time"
 )
 
 const (
@@ -20,6 +21,8 @@ const (
 	STATE_ON StateId = 2
 	STATE_OPEN StateId = 3
 	STATE_WAITING StateId = 4
+
+	WAITING_DURATION = time.Minute
 )
 
 var (
@@ -70,7 +73,7 @@ func main() {
 	check(m.AddState(STATE_OFF, NewOffState()))
 	check(m.AddState(STATE_ON, NewOnState()))
 	check(m.AddState(STATE_OPEN, NewOpenState()))
-	check(m.AddState(STATE_WAITING, NewWaitingState()))
+	check(m.AddState(STATE_WAITING, NewWaitingState(WAITING_DURATION)))
 
 	check(m.Start(STATE_INITIAL))
 

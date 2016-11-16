@@ -4,17 +4,21 @@ import (
 	"time"
 )
 
+const (
+	max_wait = time.Second * 5
+)
+
 type OpenState struct{}
 
 func NewOpenState() *OpenState {
 	s := OpenState{}
 	return &s
 }
-func (s *OpenState) Enter(m StateMachine)  {
+func (s *OpenState) Enter(m StateMachine) {
 	// TODO ring the bell
 }
 
-func (s *OpenState) Event(m StateMachine, pin uint, value uint)  {
+func (s *OpenState) Event(m StateMachine, pin uint, value uint) {
 	if pin == GPIO_SWITCH_PIN && value == GPIO_SWITCH_OFF {
 		m.Transit(STATE_OFF)
 	}
