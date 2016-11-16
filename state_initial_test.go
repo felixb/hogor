@@ -1,42 +1,49 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 // Transits to off state
 func TestInitialState_Enter_off_off(t *testing.T) {
-	s0 := NewInititalState(gpioSwitchOff, gpioGateOff)
-	s1 := s0.Enter()
+	m := MockMachine{}
+	s := NewInititalState(GPIO_SWITCH_OFF, GPIO_GATE_OFF)
 
-	assert.NotNil(t, s1)
-	assert.Equal(t, "Off", s1.String())
+	m.On("Transit", STATE_OFF).Return(nil)
+	s.Enter(&m)
+
+	m.AssertExpectations(t)
 }
 
 // Transits to off state
 func TestInitialState_Enter_off_on(t *testing.T) {
-	s0 := NewInititalState(gpioSwitchOff, gpioGateOn)
-	s1 := s0.Enter()
+	m := MockMachine{}
+	s := NewInititalState(GPIO_SWITCH_OFF, GPIO_GATE_ON)
 
-	assert.NotNil(t, s1)
-	assert.Equal(t, "Off", s1.String())
+	m.On("Transit", STATE_OFF).Return(nil)
+	s.Enter(&m)
+
+	m.AssertExpectations(t)
 }
 
 // Transits to waiting state
 func TestInitialState_Enter_on_off(t *testing.T) {
-	s0 := NewInititalState(gpioSwitchOn, gpioGateOff)
-	s1 := s0.Enter()
+	m := MockMachine{}
+	s := NewInititalState(GPIO_SWITCH_ON, GPIO_GATE_OFF)
 
-	assert.NotNil(t, s1)
-	assert.Equal(t, "Waiting", s1.String())
+	m.On("Transit", STATE_WAITING).Return(nil)
+	s.Enter(&m)
+
+	m.AssertExpectations(t)
 }
 
 // Transits to waiting state
 func TestInitialState_Enter_on_on(t *testing.T) {
-	s0 := NewInititalState(gpioSwitchOn, gpioGateOn)
-	s1 := s0.Enter()
+	m := MockMachine{}
+	s := NewInititalState(GPIO_SWITCH_ON, GPIO_GATE_ON)
 
-	assert.NotNil(t, s1)
-	assert.Equal(t, "Waiting", s1.String())
+	m.On("Transit", STATE_WAITING).Return(nil)
+	s.Enter(&m)
+
+	m.AssertExpectations(t)
 }

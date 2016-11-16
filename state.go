@@ -1,15 +1,8 @@
 package main
 
-import (
-	"time"
-)
-
 type State interface {
-	Enter() State
-	Event(pin uint, value uint) State
+	Enter(m StateMachine)
+	Leave(m StateMachine)
+	Event(m StateMachine, pin uint, value uint)
 	String() string
-}
-
-type Ticker interface {
-	Tick(time.Duration) State
 }

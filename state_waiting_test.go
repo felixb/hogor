@@ -1,41 +1,34 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
 // Enter does nothing
 func TestWaitingState_Enter(t *testing.T) {
-	s0 := NewWaitingState()
-	s1 := s0.Enter()
+	m := MockMachine{}
+	s := NewWaitingState()
+	s.Enter(&m)
 
-	assert.Nil(t, s1)
+	m.AssertExpectations(t)
 }
 
 // Switch off transits to off state
 func TestWaitingState_Event_switch_off(t *testing.T) {
-	s0 := NewWaitingState()
-	s1 := s0.Event(gpioSwitch, gpioSwitchOff)
+	m := MockMachine{}
+	s := NewWaitingState()
+	m.On("Transit", STATE_OFF).Return(nil)
 
-	assert.NotNil(t, s1)
-	assert.Equal(t, "Off", s1.String())
+	s.Event(&m, GPIO_SWITCH_PIN, GPIO_SWITCH_OFF)
+
+	m.AssertExpectations(t)
 }
 
 // Switch on transits nowhere
 func TestWaitingState_Event_switch_On(t *testing.T) {
-	s0 := NewWaitingState()
-	s1 := s0.Event(gpioSwitch, gpioSwitchOn)
-
-	assert.Nil(t, s1)
-}
-
-func TestWaitingState_Tick(t *testing.T) {
+	m := MockMachine{}
 	s := NewWaitingState()
+	s.Event(&m, GPIO_SWITCH_PIN, GPIO_SWITCH_ON)
 
-	assert.Nil(t, s.Tick(time.Second))
-	assert.Nil(t, s.Tick(2 * time.Second))
-	assert.NotNil(t, s.Tick(65 * time.Second))
-	assert.Equal(t, "On", s.Tick(65 * time.Second).String())
+	m.AssertExpectations(t)
 }

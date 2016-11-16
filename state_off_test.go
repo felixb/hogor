@@ -1,39 +1,44 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 // Enter does nothing
 func TestOffState_Enter(t *testing.T) {
-	s0 := NewOffState()
-	s1 := s0.Enter()
+	m := MockMachine{}
+	s := NewOffState()
+	s.Enter(&m)
 
-	assert.Nil(t, s1)
+	m.AssertExpectations(t)
 }
 
 // Switch on transits to waiting state
 func TestOffState_Event_switch_on(t *testing.T) {
-	s0 := NewOffState()
-	s1 := s0.Event(gpioSwitch, gpioSwitchOn)
+	m := MockMachine{}
+	s := NewOffState()
+	m.On("Transit", STATE_WAITING).Return(nil)
 
-	assert.NotNil(t, s1)
-	assert.Equal(t, "Waiting", s1.String())
+	s.Event(&m, GPIO_SWITCH_PIN, GPIO_SWITCH_ON)
+
+	m.AssertExpectations(t)
 }
 
 // Switch off transits nowhere
 func TestOffState_Event_switch_off(t *testing.T) {
-	s0 := NewOffState()
-	s1 := s0.Event(gpioSwitch, gpioSwitchOff)
+	m := MockMachine{}
+	s := NewOffState()
+	s.Event(&m, GPIO_SWITCH_PIN, GPIO_SWITCH_OFF)
 
-	assert.Nil(t, s1)
+	m.AssertExpectations(t)
 }
 
 // Gate transits nowhere
 func TestOffState_Event_gate(t *testing.T) {
-	s0 := NewOffState()
+	m := MockMachine{}
+	s := NewOffState()
+	s.Event(&m, GPIO_GATE_PIN, 0)
+	s.Event(&m, GPIO_GATE_PIN, 1)
 
-	assert.Nil(t,  s0.Event(gpioGate, 0))
-	assert.Nil(t,  s0.Event(gpioGate, 1))
+	m.AssertExpectations(t)
 }

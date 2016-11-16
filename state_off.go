@@ -7,18 +7,17 @@ func NewOffState() State {
 	return &s
 }
 
-func (s *OffState) Enter() State {
+func (s *OffState) Enter(m StateMachine) {
 	// TODO status led -> off
-	return nil
 }
 
-func (s *OffState) Event(pin uint, value uint) State {
-	if pin == gpioSwitch && value == gpioSwitchOn {
-		return NewWaitingState()
-	} else {
-		return nil
+func (s *OffState) Event(m StateMachine, pin uint, value uint) {
+	if pin == GPIO_SWITCH_PIN && value == GPIO_SWITCH_ON {
+		m.Transit(STATE_WAITING)
 	}
 }
+
+func (s *OffState) Leave(m StateMachine) {}
 
 func (s *OffState) String() string {
 	return "Off"

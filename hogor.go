@@ -6,14 +6,20 @@ import (
 )
 
 const (
-	gpioSwitch    = 2
-	gpioSwitchOff = 1
-	gpioSwitchOn  = 0
-	gpioGate      = 3
-	gpioGateOff   = 1
-	gpioGateOn    = 0
-	// gpioLight  = 4
-	// gpioBell   = 5
+	GPIO_SWITCH_PIN = 2
+	GPIO_SWITCH_OFF = 1
+	GPIO_SWITCH_ON = 0
+	GPIO_GATE_PIN = 3
+	GPIO_GATE_OFF = 1
+	GPIO_GATE_ON = 0
+	// GPIO_LIGHT_PIN  = 4
+	// GPIO_LIGHT_BELL = 5
+
+	STATE_INITIAL StateId = 0
+	STATE_OFF StateId = 1
+	STATE_ON StateId = 2
+	STATE_OPEN StateId = 3
+	STATE_WAITING StateId = 4
 )
 
 var (
@@ -43,19 +49,30 @@ func readIgnoreErrors(p gpio.Pin) uint {
 	}
 }
 
+func check(err error) {
+	if err != nil {
+		log.Panicf("Unexpected error: %s", err)
+	}
+}
+
 func main() {
-	pinSwitch := gpio.NewInput(gpioSwitch)
-	pinGate := gpio.NewInput(gpioGate)
+	pinSwitch := gpio.NewInput(GPIO_SWITCH_PIN)
+	pinGate := gpio.NewInput(GPIO_GATE_PIN)
 
 	watcher := gpio.NewWatcher()
-	watcher.AddPin(gpioSwitch)
-	watcher.AddPin(gpioGate)
+	watcher.AddPin(GPIO_SWITCH_PIN)
+	watcher.AddPin(GPIO_GATE_PIN)
 	defer watcher.Close()
 	defer pinSwitch.Close()
 
-	s := NewInititalState(readIgnoreErrors(pinSwitch), readIgnoreErrors(pinGate))
-	m := NewMachine(s)
-	m.Start()
+	m := NewMachine()
+	check(m.AddState(STATE_INITIAL, NewInititalState(readIgnoreErrors(pinSwitch), readIgnoreErrors(pinGate))))
+	check(m.AddState(STATE_OFF, NewOffState()))
+	check(m.AddState(STATE_ON, NewOnState()))
+	check(m.AddState(STATE_OPEN, NewOpenState()))
+	check(m.AddState(STATE_WAITING, NewWaitingState()))
+
+	check(m.Start(STATE_INITIAL))
 
 	for {
 		m.Event(watcher.Watch())
