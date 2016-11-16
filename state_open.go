@@ -6,14 +6,16 @@ import (
 
 type OpenState struct {
 	statusLed Output
+	bell      Output
 	maxWait   time.Duration
 	timer     *time.Timer
 	inStep    bool
 }
 
-func NewOpenState(statusLed Output, maxWait time.Duration) *OpenState {
+func NewOpenState(statusLed Output, bell Output, maxWait time.Duration) *OpenState {
 	s := OpenState{
 		statusLed: statusLed,
+		bell: bell,
 		maxWait: maxWait,
 	}
 	return &s
@@ -21,7 +23,7 @@ func NewOpenState(statusLed Output, maxWait time.Duration) *OpenState {
 func (s *OpenState) Enter(m StateMachine) {
 	s.inStep = true
 	s.statusLed.High()
-	// TODO ring the bell
+	s.bell.High()
 	s.startTimer(m)
 }
 
@@ -35,6 +37,7 @@ func (s *OpenState) Event(m StateMachine, pin uint, value uint) {
 
 func (s *OpenState) Leave(m StateMachine) {
 	s.inStep = false
+	s.bell.Low()
 	s.stopTimer()
 }
 
