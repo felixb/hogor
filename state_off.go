@@ -1,14 +1,16 @@
 package main
 
-type OffState struct{}
+type OffState struct {
+	statusLed Output
+}
 
-func NewOffState() State {
-	s := OffState{}
+func NewOffState(statusLed Output) State {
+	s := OffState{statusLed: statusLed}
 	return &s
 }
 
 func (s *OffState) Enter(m StateMachine) {
-	// TODO status led -> off
+	s.statusLed.Low()
 }
 
 func (s *OffState) Event(m StateMachine, pin uint, value uint) {

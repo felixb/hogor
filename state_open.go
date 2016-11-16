@@ -4,37 +4,52 @@ import (
 	"time"
 )
 
-const (
-	max_wait = time.Second * 5
-)
+type OpenState struct {
+	statusLed Output
+	maxWait   time.Duration
+	timer     *time.Timer
+	inStep    bool
+}
 
-type OpenState struct{}
-
-func NewOpenState() *OpenState {
-	s := OpenState{}
+func NewOpenState(statusLed Output, maxWait time.Duration) *OpenState {
+	s := OpenState{
+		statusLed: statusLed,
+		maxWait: maxWait,
+	}
 	return &s
 }
 func (s *OpenState) Enter(m StateMachine) {
+	s.inStep = true
+	s.statusLed.High()
 	// TODO ring the bell
+	s.startTimer(m)
 }
 
 func (s *OpenState) Event(m StateMachine, pin uint, value uint) {
 	if pin == GPIO_SWITCH_PIN && value == GPIO_SWITCH_OFF {
 		m.Transit(STATE_OFF)
+	} else if pin == GPIO_GATE_PIN && value == GPIO_GATE_OFF {
+		m.Transit(STATE_ON)
 	}
 }
 
-func (s *OpenState) Leave(m StateMachine) {}
+func (s *OpenState) Leave(m StateMachine) {
+	s.inStep = false
+	s.stopTimer()
+}
 
 func (s *OpenState) String() string {
 	return "Open"
 }
 
-func (s *OpenState) Tick(d time.Duration) State {
-	// FIXME get your own timer
-	if d < max_wait {
-		return nil
-	} else {
-		return NewOnState()
-	}
+func (s *OpenState) startTimer(m StateMachine) {
+	s.timer = time.AfterFunc(s.maxWait, func() {
+		if s.inStep {
+			m.Transit(STATE_ON)
+		}
+	})
+}
+
+func (s *OpenState) stopTimer() {
+	s.timer.Stop()
 }

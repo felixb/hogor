@@ -1,13 +1,15 @@
 package main
 
-type OnState struct{}
+type OnState struct {
+	statusLed Output
+}
 
-func NewOnState() State {
-	s := OnState{}
+func NewOnState(statusLed Output) State {
+	s := OnState{statusLed: statusLed}
 	return &s
 }
 func (s *OnState) Enter(m StateMachine) {
-	// TODO status led -> on
+	s.statusLed.High()
 }
 
 func (s *OnState) Event(m StateMachine, pin uint, value uint) {

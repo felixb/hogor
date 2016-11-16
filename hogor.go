@@ -13,7 +13,7 @@ const (
 	GPIO_GATE_PIN = 3
 	GPIO_GATE_OFF = 1
 	GPIO_GATE_ON = 0
-	// GPIO_LIGHT_PIN  = 4
+	GPIO_LIGHT_PIN = 4
 	// GPIO_LIGHT_BELL = 5
 
 	STATE_INITIAL StateId = 0
@@ -23,6 +23,8 @@ const (
 	STATE_WAITING StateId = 4
 
 	WAITING_DURATION = time.Minute
+	STATUS_BLINK_INTERVAL = time.Second
+	OPEN_DURATION = time.Second * 5
 )
 
 var (
@@ -61,6 +63,7 @@ func check(err error) {
 func main() {
 	pinSwitch := gpio.NewInput(GPIO_SWITCH_PIN)
 	pinGate := gpio.NewInput(GPIO_GATE_PIN)
+	pinLight := gpio.NewOutput(GPIO_LIGHT_PIN, false)
 
 	watcher := gpio.NewWatcher()
 	watcher.AddPin(GPIO_SWITCH_PIN)
@@ -70,10 +73,10 @@ func main() {
 
 	m := NewMachine()
 	check(m.AddState(STATE_INITIAL, NewInititalState(readIgnoreErrors(pinSwitch), readIgnoreErrors(pinGate))))
-	check(m.AddState(STATE_OFF, NewOffState()))
-	check(m.AddState(STATE_ON, NewOnState()))
-	check(m.AddState(STATE_OPEN, NewOpenState()))
-	check(m.AddState(STATE_WAITING, NewWaitingState(WAITING_DURATION)))
+	check(m.AddState(STATE_OFF, NewOffState(&pinLight)))
+	check(m.AddState(STATE_ON, NewOnState(&pinLight)))
+	check(m.AddState(STATE_OPEN, NewOpenState(&pinLight, OPEN_DURATION)))
+	check(m.AddState(STATE_WAITING, NewWaitingState(&pinLight, STATUS_BLINK_INTERVAL, WAITING_DURATION)))
 
 	check(m.Start(STATE_INITIAL))
 

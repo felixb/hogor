@@ -5,23 +5,35 @@ import (
 )
 
 type WaitingState struct {
-	max_wait      time.Duration
-	timer         *time.Timer
-	stopTimerChan chan bool
+	statusLed      Output
+	statusValue    bool
+	statusInterval time.Duration
+	maxWait        time.Duration
+	timer          *time.Timer
+	ticker         *time.Ticker
+	inStep         bool
 }
 
-func NewWaitingState(max_wait time.Duration) *WaitingState {
-	s := WaitingState{max_wait: max_wait}
+func NewWaitingState(statusLed Output, statusInterval time.Duration, maxWait time.Duration) *WaitingState {
+	s := WaitingState{
+		statusLed: statusLed,
+		statusValue: false,
+		statusInterval: statusInterval,
+		maxWait: maxWait,
+	}
 	return &s
 }
 
 func (s *WaitingState) Enter(m StateMachine) {
-	// TODO blink status led
+	s.inStep = true
 	s.startTimer(m)
+	s.startTicker(m)
 }
 
 func (s *WaitingState) Leave(m StateMachine) {
+	s.inStep = false
 	s.stopTimer()
+	s.stopTicker()
 }
 
 func (s *WaitingState) Event(m StateMachine, pin uint, value uint) {
@@ -35,21 +47,31 @@ func (s *WaitingState) String() string {
 }
 
 func (s *WaitingState) startTimer(m StateMachine) {
-	s.stopTimerChan = make(chan bool)
-	s.timer = time.NewTimer(s.max_wait)
-	go func() {
-		select {
-		case <-s.timer.C:
+	s.timer = time.AfterFunc(s.maxWait, func() {
+		if s.inStep {
 			m.Transit(STATE_ON)
-		case <-s.stopTimerChan:
-			return
+		}
+	})
+}
+
+func (s *WaitingState) stopTimer() {
+	s.timer.Stop()
+}
+
+func (s *WaitingState) startTicker(m StateMachine) {
+	s.ticker = time.NewTicker(s.statusInterval)
+	go func() {
+		for range s.ticker.C {
+			if s.statusValue {
+				s.statusLed.Low()
+			} else {
+				s.statusLed.High()
+			}
+			s.statusValue = !s.statusValue
 		}
 	}()
 }
 
-func (s *WaitingState) stopTimer() {
-	s.stopTimerChan <- true
-	if !s.timer.Stop() {
-		<-s.timer.C
-	}
+func (s *WaitingState) stopTicker() {
+	s.ticker.Stop()
 }

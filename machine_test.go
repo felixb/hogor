@@ -1,9 +1,8 @@
 package main
 
 import (
-	// "github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,24 +36,6 @@ func (m *MockMachine) Transit(id StateId) error {
 
 func (m *MockMachine) Event(pin uint, value uint) {
 	m.Called(pin, value)
-}
-
-type MockState struct {
-	mock.Mock
-}
-
-func (s *MockState) Enter(m StateMachine) {
-	s.Called(m)
-}
-func (s *MockState) Leave(m StateMachine) {
-	s.Called(m)
-}
-func (s *MockState) Event(m StateMachine, pin uint, value uint) {
-	s.Called(m, pin, value)
-}
-
-func (s *MockState) String() string {
-	return "MockState"
 }
 
 func TestMachine_AddState(t *testing.T) {
