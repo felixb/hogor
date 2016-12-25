@@ -1,6 +1,6 @@
 .PHONY: build-local build-docker clean
 
-DOCKER_GOLANG_VERSION=1.6.3
+DOCKER_GOLANG_VERSION=1.7.4
 DOCKER_USER=1000
 DOCKER_BUILD_DIR=/usr/src/app
 
