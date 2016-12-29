@@ -80,6 +80,5 @@ func (m *Machine) Transit(id StateId) error {
 
 // Delegate an event to current state
 func (m *Machine) Event(pin uint, value uint) {
-	log.Printf("Event: pin '%s' (%d), value %d", PinName(pin), pin, value)
 	m.CurrentState().Event(m, pin, value)
 }
