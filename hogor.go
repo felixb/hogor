@@ -18,12 +18,11 @@ const (
 
 	STATE_OFF StateId = 1
 	STATE_ON StateId = 2
-	STATE_OPEN StateId = 3
-	STATE_WAITING StateId = 4
+	STATE_WAITING StateId = 3
 
 	WAITING_DURATION = time.Minute
 	STATUS_BLINK_INTERVAL = time.Second
-	OPEN_DURATION = time.Second * 5
+	OPEN_DURATION = time.Second
 
 	CHECK_INTERVAL = time.Second * 2
 )
@@ -46,8 +45,7 @@ func main() {
 
 	m := NewMachine()
 	check(m.AddState(STATE_OFF, NewOffState(&pinLight)))
-	check(m.AddState(STATE_ON, NewOnState(&pinLight)))
-	check(m.AddState(STATE_OPEN, NewOpenState(&pinLight, &pinBell, OPEN_DURATION)))
+	check(m.AddState(STATE_ON, NewOnState(&pinLight, &pinBell, OPEN_DURATION)))
 	check(m.AddState(STATE_WAITING, NewWaitingState(&pinLight, STATUS_BLINK_INTERVAL, WAITING_DURATION)))
 
 	check(m.Start(STATE_OFF))
