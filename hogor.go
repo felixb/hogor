@@ -14,7 +14,7 @@ const (
 	GPIO_GATE_OFF = 1
 	GPIO_GATE_ON = 0
 	GPIO_LIGHT_PIN = 4
-	GPIO_BELL_PIN = 5
+	GPIO_BELL_PIN = 14
 
 	STATE_OFF StateId = 1
 	STATE_ON StateId = 2
@@ -40,7 +40,7 @@ func main() {
 	defer pinGate.Close()
 	pinLight := gpio.NewOutput(GPIO_LIGHT_PIN, false)
 	defer pinLight.Close()
-	pinBell := gpio.NewOutput(GPIO_BELL_PIN, false)
+	pinBell := gpio.NewOutput(GPIO_BELL_PIN, true)
 	defer pinBell.Close()
 
 	m := NewMachine()

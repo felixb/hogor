@@ -62,15 +62,15 @@ func TestOnState_Event_gate_off(t *testing.T) {
 }
 
 
-// Gate open pulls up and down the bell
+// Gate open pulls down and up the bell
 func TestOnState_Event_gate_on(t *testing.T) {
 	m := MockMachine{}
 	os := MockOutput{}
 	ob := MockOutput{}
 	s := NewOnState(&os, &ob, time.Millisecond * 100)
 
-	ob.On("High").Return(nil)
 	ob.On("Low").Return(nil)
+	ob.On("High").Return(nil)
 
 	s.Event(&m, GPIO_GATE_PIN, GPIO_GATE_ON)
 	time.Sleep(time.Millisecond * 200)
@@ -80,14 +80,14 @@ func TestOnState_Event_gate_on(t *testing.T) {
 	ob.AssertExpectations(t)
 }
 
-// Pull down bell
+// Pull up bell
 func TestOnState_Leave(t *testing.T) {
 	m := MockMachine{}
 	os := MockOutput{}
 	ob := MockOutput{}
 	s := NewOnState(&os, &ob, time.Second)
 
-	ob.On("Low").Return(nil)
+	ob.On("High").Return(nil)
 
 	s.Leave(&m)
 

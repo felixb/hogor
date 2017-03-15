@@ -27,9 +27,9 @@ func (s *OnState) Event(m StateMachine, pin uint, value uint) {
 	if pin == GPIO_SWITCH_PIN && value == GPIO_SWITCH_OFF {
 		m.Transit(STATE_OFF)
 	} else if pin == GPIO_GATE_PIN && value == GPIO_GATE_ON {
-		s.bell.High()
+        s.bell.Low()
 		s.timer = time.AfterFunc(s.bellDuration, func() {
-			s.bell.Low()
+		    s.bell.High()
 			s.timer = nil
 		})
 	}
@@ -40,7 +40,7 @@ func (s *OnState) Leave(m StateMachine) {
 		s.timer.Stop()
 		s.timer = nil
 	}
-	s.bell.Low()
+	s.bell.High()
 }
 
 func (s *OnState) String() string {
